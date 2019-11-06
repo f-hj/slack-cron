@@ -1,9 +1,17 @@
 extern crate slack_api;
-extern crate openweather;
 extern crate json;
+extern crate serde;
+extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
+extern crate reqwest;
+extern crate time;
+extern crate url;
+
+mod owm;
+mod weather_types;
 
 use std::env;
-use openweather::LocationSpecifier;
 use json::object;
 use std::collections::HashMap;
 
@@ -24,9 +32,10 @@ fn main() {
     let slack_token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
     let owm_token = env::var("OWM_API_TOKEN").expect("OWM_API_TOKEN not set.");
 
-    let loc = LocationSpecifier::CityAndCountryName{city:"Paris", country:"France"};
-    let weather = openweather::get_current_weather(loc, &owm_token).unwrap();
-    println!("base {}", weather.weather[0].main);
+    let loc = owm::LocationSpecifier::CityAndCountryName{city:"Paris", country:"France"};
+    let weather_res = owm::get_current_weather(loc, &owm_token);
+    let weather = weather_res.unwrap();
+    println!("base {:?}", weather.weather[0].main);
     println!("Right now it is {}K {}%", weather.main.temp, weather.main.humidity);
     let main: &str = &*(weather.weather[0].main);
     let icon: &str = &weather.weather[0].icon[..2];
