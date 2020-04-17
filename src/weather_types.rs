@@ -53,7 +53,6 @@ pub struct Clouds {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Wind {
     pub speed: f32,
-    pub deg: f32,
     pub gust: Option<f32>,
 }
 
